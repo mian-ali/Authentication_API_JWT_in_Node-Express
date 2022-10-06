@@ -41,6 +41,38 @@ class userController {
       }
     }
   };
+
+  static userLogin = async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      if (email && password) {
+        const user = await userModel.findOne({ email: email });
+
+        if (user != null) {
+          const isMatch = await bcrypt.compare(password, user.password);
+
+          if (user.email === email && isMatch) {
+            res.status(200).json({ sucess: true, message: 'login sucessfull' });
+          } else {
+            res
+              .status(400)
+              .json({
+                sucess: false,
+                message: ' Email and Password not valid',
+              });
+          }
+        } else {
+          res.status(400).json({ sucess: false, message: 'user not found' });
+        }
+      } else {
+        res
+          .status(400)
+          .json({ sucess: false, message: 'please fill all the fields' });
+      }
+    } catch (error) {
+      res.json({ sucess: false, message: error.message });
+    }
+  };
 }
 
 export default userController;
