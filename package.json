@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/mian-ali/Authentication_API_JWT_in_Node-Express#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "dotenv": "^16.0.3",
     "express": "^5.0.0-beta.1",
     "mongoose": "^6.6.5"
