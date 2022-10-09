@@ -118,6 +118,13 @@ class userController {
         .json({ sucess: false, message: 'please fill all the fields' });
     }
   };
+
+  static userProfile = async (req, res) => {
+    res.status(200).json({
+      sucess: true,
+      userProfile: req.user,
+    });
+  };
 }
 
 export default userController;
