@@ -10,7 +10,7 @@ class userController {
     if (user) {
       res.status(400).json({ sucess: false, message: 'user already exist' });
     } else {
-      if ((name, email, password, tc, password_comfirm)) {
+      if (name && email && password && tc && password_comfirm) {
         if (password === password_comfirm) {
           try {
             const salt = await bcrypt.genSalt(10);
@@ -88,6 +88,34 @@ class userController {
       }
     } catch (error) {
       res.json({ sucess: false, message: error.message });
+    }
+  };
+
+  static chanagePassword = async (req, res) => {
+    const { password, password_comfirm } = req.body;
+
+    if (password && password_comfirm) {
+      if (password !== password_comfirm) {
+        res.status(400).json({
+          sucess: false,
+          message: 'New password and comfirm password not match',
+        });
+      } else {
+        const salt = await bcrypt.genSalt(10);
+        const newHashPassword = await bcrypt.hash(password, salt);
+        await userModel.findByIdAndUpdate(req.user._id, {
+          password: newHashPassword,
+        });
+        // console.log(req.user);
+        res.send({
+          status: 'success',
+          message: 'Password changed succesfully',
+        });
+      }
+    } else {
+      res
+        .status(400)
+        .json({ sucess: false, message: 'please fill all the fields' });
     }
   };
 }
