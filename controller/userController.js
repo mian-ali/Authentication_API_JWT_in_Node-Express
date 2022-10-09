@@ -1,5 +1,6 @@
 import userModel from '../model/userModel.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 class userController {
   static userRegister = async (req, res) => {
@@ -22,10 +23,19 @@ class userController {
             });
 
             await newUser.save();
+            const saved_user = await userModel.findOne({ email: email });
 
-            res
-              .status(200)
-              .json({ sucess: true, message: 'user created successfully' });
+            //Generate JWT Token
+            const token = jwt.sign(
+              { userID: saved_user._id },
+              process.env.JWT_SECRET,
+              { expiresIn: '1d' }
+            );
+            res.status(200).json({
+              sucess: true,
+              message: 'user created successfully',
+              token: token,
+            });
           } catch (error) {
             res.status(500).json({ sucess: false, message: error.message });
           }
@@ -52,14 +62,21 @@ class userController {
           const isMatch = await bcrypt.compare(password, user.password);
 
           if (user.email === email && isMatch) {
-            res.status(200).json({ sucess: true, message: 'login sucessfull' });
+            const token = jwt.sign(
+              { userID: user._id },
+              process.env.JWT_SECRET,
+              { expiresIn: '1d' }
+            );
+            res.status(200).json({
+              sucess: true,
+              message: 'login sucessfull',
+              token: token,
+            });
           } else {
-            res
-              .status(400)
-              .json({
-                sucess: false,
-                message: ' Email and Password not valid',
-              });
+            res.status(400).json({
+              sucess: false,
+              message: ' Email and Password not valid',
+            });
           }
         } else {
           res.status(400).json({ sucess: false, message: 'user not found' });
