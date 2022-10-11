@@ -144,7 +144,7 @@ class userController {
       } else {
         res.status(400).json({
           sucess: false,
-          message: 'User Not Found',
+          message: 'User Not Found ',
         });
       }
     } else {
