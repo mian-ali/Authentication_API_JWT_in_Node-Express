@@ -12,6 +12,7 @@ router.use('/userprofile', checkUserAuth);
 router.post('/register', userController.userRegister);
 router.post('/login', userController.userLogin);
 router.post('/user-reset-password', userController.userRessetPaswordSendEmail);
+router.post('/resetpassword/:id/:token', userController.ResetPassword);
 
 //private routes
 router.post('/changepassword', userController.chanagePassword);

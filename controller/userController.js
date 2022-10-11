@@ -133,7 +133,9 @@ class userController {
       const user = await userModel.findOne({ email: email });
       if (user) {
         const secret = user._id + process.env.JWT_SECRET;
-        const token = jwt.sign({ userID: user._id }, secret, {expiresIn: '10m'});
+        const token = jwt.sign({ userID: user._id }, secret, {
+          expiresIn: '10m',
+        });
         const link = `localhost:3000/api/user/resetpassword/${user._id}/${token}`;
         console.log(link);
 
@@ -151,6 +153,42 @@ class userController {
       res
         .status(400)
         .json({ sucess: false, message: 'User Email is required' });
+    }
+  };
+
+  static ResetPassword = async (req, res) => {
+    const { password, password_comfirm } = req.body;
+    const { id, token } = req.params;
+    const user = await userModel.findById(id);
+    const new_secret = user._id + process.env.JWT_SECRET;
+    try {
+      jwt.verify(token, new_secret);
+      if (password && password_comfirm) {
+        if (password !== password_comfirm) {
+          res.status(400).json({
+            sucess: false,
+            message: 'New password and comfirm password not match',
+          });
+        } else {
+          const salt = await bcrypt.genSalt(10);
+          const newHashPassword = await bcrypt.hash(password, salt);
+          await userModel.findByIdAndUpdate(user._id, {
+            password: newHashPassword,
+          });
+
+          res.status(200).json({
+            sucess: true,
+            message: 'Password changed succesfully',
+          });
+        }
+      } else {
+        res
+          .status(400)
+          .json({ sucess: false, message: 'please fill all the fields' });
+      }
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).json({ sucess: false, message: 'invaild Token' });
     }
   };
 }
