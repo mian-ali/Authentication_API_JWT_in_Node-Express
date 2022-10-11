@@ -125,6 +125,34 @@ class userController {
       userProfile: req.user,
     });
   };
+
+  static userRessetPaswordSendEmail = async (req, res) => {
+    const { email } = req.body;
+
+    if (email) {
+      const user = await userModel.findOne({ email: email });
+      if (user) {
+        const secret = user._id + process.env.JWT_SECRET;
+        const token = jwt.sign({ userID: user._id }, secret, {expiresIn: '10m'});
+        const link = `localhost:3000/api/user/resetpassword/${user._id}/${token}`;
+        console.log(link);
+
+        res.status(200).json({
+          sucess: true,
+          message: 'Email send successfully ...Please check your email',
+        });
+      } else {
+        res.status(400).json({
+          sucess: false,
+          message: 'User Not Found ',
+        });
+      }
+    } else {
+      res
+        .status(400)
+        .json({ sucess: false, message: 'User Email is required' });
+    }
+  };
 }
 
 export default userController;
