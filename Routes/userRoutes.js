@@ -11,6 +11,7 @@ router.use('/userprofile', checkUserAuth);
 //public routes
 router.post('/register', userController.userRegister);
 router.post('/login', userController.userLogin);
+router.post('/user-reset-password', userController.userRessetPaswordSendEmail);
 
 //private routes
 router.post('/changepassword', userController.chanagePassword);
