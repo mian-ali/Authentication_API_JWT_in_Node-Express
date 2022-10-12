@@ -1,7 +1,7 @@
 import userModel from '../model/userModel.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
+import transporter from '../config/emailConfig.js';
 class userController {
   static userRegister = async (req, res) => {
     const { name, email, password, tc, password_comfirm } = req.body;
@@ -138,6 +138,14 @@ class userController {
         });
         const link = `localhost:3000/api/user/resetpassword/${user._id}/${token}`;
         console.log(link);
+
+        // Send Email
+        // let info = await transporter.sendMail({
+        //   from: process.env.EMAIL_FROM,
+        //   to: user.email,
+        //   subject: 'Ali AHmad test',
+        //   html: `<a href=${link}>Click Here</a> to Reset Your Password`,
+        // });
 
         res.status(200).json({
           sucess: true,
